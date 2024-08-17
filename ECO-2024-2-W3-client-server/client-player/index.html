@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PLAYER</title>
+    <link rel="stylesheet" href="./cs.css">
+  </head>
+  <body>
+    <h1>Player Registration</h1>
+
+    <form id="player-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <fieldset>
+        <legend>Choose your move:</legend>
+        <label>
+          <input type="radio" name="move" value="Piedra" required />
+          Piedra
+        </label>
+        <label>
+          <input type="radio" name="move" value="Papel" />
+          Papel
+        </label>
+        <label>
+          <input type="radio" name="move" value="Tijera" />
+          Tijera
+        </label>
+      </fieldset>
+
+      <button type="submit">Create Player</button>
+    </form>
+
+    <div id="data-container"></div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
