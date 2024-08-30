@@ -1,71 +1,40 @@
-let count = 0;
+let socket = io('http://localhost:5050', { path: '/real-time' });
 
-const interval = setInterval(() => {
-  const sec = document.getElementById("seconds");
-  
-  if (sec) {
-    sec.textContent = count; // Actualiza el contador en la página
-  }
+socket.on('new-player', (player) => {
+	renderNewPlayer(player);
+});
 
-  count++; // Incrementa el contador
+socket.on('game-result', (result) => {
+	renderGameResult(result);
 
-  // Cuando el contador llega a 20, se llama a fetchData y se reinicia el contador
-  if (count === 10) {
-    fetchData();
-    count = 0; // Reinicia el contador a 0
-  }
+});
 
-}, 1000); // Se ejecuta cada segundo (1000 ms)
+function renderNewPlayer(player) {
+	const container = document.getElementById('data-container');
+	const div = document.createElement('div');
+	div.className = 'item';
 
+	div.innerHTML = `
+    <img src="${player.profilePicture}" alt="${player.name}'s profile picture" />
+    <p>Name: ${player.name}</p>
+    <p>Chose: ${player.move}</p>
+  `;
 
-async function fetchData() {
-  renderLoadingState();
-  try {
-    const response = await fetch("http://localhost:5050/users");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    renderData(data);
-  } catch (error) {
-    console.error(error);
-    renderErrorState();
-  }
+	container.appendChild(div);
 }
 
-function renderErrorState() {
-  const container = document.getElementById("data-container");
-  container.innerHTML = ""; // Limpiar datos anteriores
-  container.innerHTML = "<p>Failed to load data</p>";
-  console.log("Failed to load data");
-}
-
-function renderLoadingState() {
-  const container = document.getElementById("data-container");
-  container.innerHTML = ""; // Limpiar datos anteriores
-  container.innerHTML = "<p>Loading...</p>";
-  console.log("Loading...");
-}
-
-function renderData(data) {
-  const container = document.getElementById("data-container");
-  container.innerHTML = ""; // Limpiar datos anteriores
-
-  if (data.players.length > 0) {
-    data.players.forEach((item) => {
-      const div = document.createElement("div");
-      div.className = "item";
-
-      // Mostrar la imagen, el nombre y la opción elegida por el jugador
-      div.innerHTML = `
-        <img src="${item.profilePicture}" alt="${item.name}'s profile picture" />
-        <p>Name: ${item.name}</p>
-        <p>Chose: ${item.move}</p>
-      `;
-
-      container.appendChild(div);
-    });
-  } else {
-    container.innerHTML = "<p>No players found</p>";
-  }
+function renderGameResult(result) {
+	const container = document.getElementById('result-container');
+	if (container) {
+		container.innerHTML = '';
+		const resultDiv = document.createElement('div');
+		resultDiv.className = 'winner-announcement';
+		resultDiv.innerHTML = `
+			<h2>🎉 Resultado del Juego 🎉</h2>
+			<p class="winner-text">${result}</p>
+		`;
+		container.appendChild(resultDiv);
+	} else {
+		console.error('Result container not found in the DOM');
+	}
 }

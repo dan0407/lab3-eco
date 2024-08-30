@@ -1,7 +1,10 @@
+let socket = io("http://localhost:5050", { path: "/real-time" });
+
 document.getElementById("player-form").addEventListener("submit", createUser);
 
 async function createUser(event) {
-  event.preventDefault(); // Prevenir la recarga de la página al enviar el formulario
+  event.preventDefault();
+
   renderLoadingState();
 
   try {
@@ -35,13 +38,11 @@ async function createUser(event) {
 function renderErrorState() {
   const container = document.getElementById("data-container");
   container.innerHTML = "<p>Failed to load data</p>";
-  console.log("Failed to load data");
 }
 
 function renderLoadingState() {
   const container = document.getElementById("data-container");
   container.innerHTML = "<p>Loading...</p>";
-  console.log("Loading...");
 }
 
 function renderData(data) {
@@ -51,4 +52,26 @@ function renderData(data) {
   div.className = "item";
   div.innerHTML = `Player created: ${data.name} chose ${data.move}`;
   container.appendChild(div);
+}
+
+// Escuchar el evento "game-result" del servidor
+socket.on("game-result", (result) => {
+  renderGameResult(result);
+});
+
+// Mostrar el resultado del juego en el cliente
+function renderGameResult(result) {
+  const container = document.getElementById('result-container');
+  if (container) {
+    container.innerHTML = '';
+    const resultDiv = document.createElement('div');
+    resultDiv.className = 'winner-announcement';
+    resultDiv.innerHTML = `
+      <h2>🎉 Resultado del Juego 🎉</h2>
+      <p class="winner-text">${result}</p>
+    `;
+    container.appendChild(resultDiv);
+  } else {
+    console.error('Result container not found in the DOM');
+  }
 }
